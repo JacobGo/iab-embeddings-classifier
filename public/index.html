@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IAB Content Classifier</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
   <!--
     Import map resolves the bare specifier used in the compiled app.js.
@@ -140,6 +141,10 @@
       background: var(--top-bg);
       border-color: var(--accent);
     }
+    .result.selected {
+      border-color: #fff;
+      background: #252840;
+    }
 
     .result-header {
       display: flex;
@@ -204,6 +209,50 @@
 
     .muted { color: var(--muted); font-size: 0.9rem; }
 
+    .output-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 1.25rem;
+      margin-top: 2rem;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .output-grid { grid-template-columns: 1fr; }
+    }
+
+    #results { margin-top: 0; }
+
+    .map-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .map-header {
+      font-size: 0.75rem;
+      color: var(--muted);
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .viz-link {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      text-decoration: none;
+    }
+    .viz-link:hover { text-decoration: underline; }
+
+    #map-canvas {
+      display: none;
+      width: 100%;
+      height: 280px;
+      background: var(--bg);
+    }
+
     .bookmarklet-setup {
       margin-top: 3rem;
       border: 1px solid var(--border);
@@ -267,7 +316,16 @@
       </select>
     </div>
 
-    <div id="results"></div>
+    <div class="output-grid">
+      <div id="results"></div>
+      <div class="map-panel">
+        <div class="map-header">
+          Embedding space
+          <a href="viz.html" class="viz-link">Full map ↗</a>
+        </div>
+        <canvas id="map-canvas"></canvas>
+      </div>
+    </div>
 
     <details class="bookmarklet-setup">
       <summary>Bookmarklet setup</summary>

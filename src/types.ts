@@ -32,4 +32,5 @@ export interface EmbeddedEntry {
   tier1: string;
   tier: number;
   embedding: number[];
+  umap?: [number, number]; // 2-D UMAP projection, added by generate-embeddings
 }

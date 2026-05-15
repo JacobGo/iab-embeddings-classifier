@@ -4,11 +4,12 @@
   "type": "module",
   "scripts": {
     "generate": "tsx scripts/generate-embeddings.ts",
-    "build": "esbuild src/app.ts --outfile=public/app.js --format=esm --platform=browser",
+    "build": "esbuild src/app.ts --outfile=public/app.js --format=esm --platform=browser && esbuild src/viz.ts --outfile=public/viz.js --format=esm --platform=browser",
     "serve": "npm run build && npx serve public -p 3000"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.0.0"
+    "@huggingface/transformers": "^3.0.0",
+    "umap-js": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

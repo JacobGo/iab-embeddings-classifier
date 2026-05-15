@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- dark card background -->
+  <rect width="32" height="32" rx="6" fill="#0f1117"/>
+
+  <!-- taxonomy clusters — four hue groups, each with a large + small dot -->
+  <!-- orange cluster (top-left) -->
+  <circle cx="7"  cy="8"  r="2.4" fill="#f97316" opacity="0.85"/>
+  <circle cx="11" cy="11" r="1.5" fill="#fb923c" opacity="0.65"/>
+
+  <!-- violet cluster (top-right) -->
+  <circle cx="25" cy="7"  r="2.4" fill="#8b5cf6" opacity="0.85"/>
+  <circle cx="21" cy="11" r="1.5" fill="#6366f1" opacity="0.65"/>
+
+  <!-- green cluster (bottom-left) -->
+  <circle cx="6"  cy="25" r="2.2" fill="#22c55e" opacity="0.85"/>
+  <circle cx="11" cy="24" r="1.4" fill="#10b981" opacity="0.65"/>
+
+  <!-- cyan cluster (bottom-right) -->
+  <circle cx="26" cy="24" r="2.2" fill="#0ea5e9" opacity="0.85"/>
+  <circle cx="21" cy="26" r="1.4" fill="#06b6d4" opacity="0.65"/>
+
+  <!-- scatter filler dots -->
+  <circle cx="16" cy="6"  r="1.2" fill="#ec4899" opacity="0.55"/>
+  <circle cx="28" cy="15" r="1.1" fill="#a78bfa" opacity="0.5"/>
+  <circle cx="4"  cy="17" r="1.1" fill="#34d399" opacity="0.5"/>
+  <circle cx="17" cy="27" r="1.2" fill="#38bdf8" opacity="0.55"/>
+
+  <!-- query point: outer glow, indigo ring, white core -->
+  <circle cx="16" cy="16" r="5.5" fill="rgba(255,255,255,0.06)"/>
+  <circle cx="16" cy="16" r="3.5" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+  <circle cx="16" cy="16" r="2"   fill="#ffffff"/>
+</svg>

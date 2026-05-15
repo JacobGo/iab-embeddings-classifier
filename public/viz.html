@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IAB Embedding Space</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0f1117;
+      --surface: #1a1d27;
+      --border:  #2e3144;
+      --accent:  #6366f1;
+      --accent2: #818cf8;
+      --text:    #e2e8f0;
+      --muted:   #94a3b8;
+    }
+
+    html, body { height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+    header {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    header a { color: var(--accent2); font-size: 0.85rem; text-decoration: none; }
+    header a:hover { text-decoration: underline; }
+    header h1 { font-size: 1rem; font-weight: 600; }
+    #count  { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+    #status { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .layout {
+      display: flex;
+      height: calc(100vh - 44px);
+    }
+
+    canvas {
+      flex: 1;
+      min-width: 0;
+      display: block;
+      cursor: crosshair;
+      background: var(--bg);
+    }
+
+    /* ── Legend ──────────────────────────────────────────────────────────── */
+    #legend {
+      width: 220px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      border-left: 1px solid var(--border);
+      padding: 0.75rem 0.5rem;
+      font-size: 0.78rem;
+    }
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.25rem;
+      border-radius: 4px;
+    }
+    .legend-row:hover { background: var(--surface); }
+    .swatch {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .label { flex: 1; color: var(--text); }
+    .cnt   { color: var(--muted); font-size: 0.72rem; }
+
+    /* ── Tooltip ─────────────────────────────────────────────────────────── */
+    #tooltip {
+      display: none;
+      position: fixed;
+      pointer-events: none;
+      background: #1e2035;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.8rem;
+      max-width: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 100;
+      line-height: 1.5;
+    }
+    #tooltip strong { color: var(--accent2); }
+    #tooltip code   { font-family: monospace; color: var(--muted); font-size: 0.75rem; }
+
+    /* ── Tier size legend ────────────────────────────────────────────────── */
+    .tier-hint {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .tier-hint-row { display: flex; align-items: center; gap: 0.5rem; }
+    .tier-dot {
+      background: #6366f1;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/">← Classifier</a>
+    <h1>IAB Embedding Space</h1>
+    <span id="count"></span>
+    <span id="status"></span>
+  </header>
+
+  <div class="layout">
+    <canvas id="canvas"></canvas>
+    <aside id="legend">
+      <!-- tier size guide appended by JS -->
+    </aside>
+  </div>
+
+  <div id="tooltip"></div>
+  <script type="module" src="viz.js"></script>
+</body>
+</html>

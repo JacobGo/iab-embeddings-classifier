@@ -11,6 +11,7 @@
  */
 
 import { AutoModel, AutoTokenizer, env } from '@huggingface/transformers';
+import { UMAP } from 'umap-js';
 import { fetchAndParseTaxonomy } from '../src/parse-taxonomy.ts';
 import type { BatchEncoding, EmbeddedEntry, SentenceOutput, TaxonomyEntry } from '../src/types.ts';
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -79,10 +80,20 @@ async function main(): Promise<void> {
     process.stdout.write(` (${results[results.length - 1].embedding.length}d) ✓\n`);
   }
 
+  // ── UMAP 2-D projection ───────────────────────────────────────────────────
+  console.log('\nComputing UMAP 2-D projection…');
+  const reducer = new UMAP({ nComponents: 2, nNeighbors: 15, minDist: 0.1 });
+  const coords  = await reducer.fitAsync(
+    results.map(r => r.embedding),
+    (epoch: number) => process.stdout.write(`\r  epoch ${epoch}`),
+  );
+  process.stdout.write('\n');
+  results.forEach((r, i) => { r.umap = [coords[i][0], coords[i][1]]; });
+
   const outPath = resolve(__dirname, '../public/iab-embeddings.json');
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(results));
-  console.log(`\nWrote ${results.length} embeddings → ${outPath}`);
+  console.log(`Wrote ${results.length} embeddings + UMAP coords → ${outPath}`);
 }
 
 main().catch((err: unknown) => {

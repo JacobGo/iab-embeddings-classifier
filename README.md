@@ -6,7 +6,7 @@ Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  SETUP (once)                                                   │
+│  SETUP (once, Node.js)                                          │
 │                                                                 │
 │  1. fetch-taxonomy ──► parse ~700 IAB categories from TSV       │
 │         │                                                       │
@@ -16,25 +16,28 @@ Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github
 │     with doc prefix: "title: none | text: <path>"              │
 │         │                                                       │
 │         ▼                                                       │
-│  3. L2-normalise + write ──► public/iab-embeddings.json         │
+│  3. UMAP 2D projection of all embeddings (umap-js)              │
+│  4. L2-normalise + write ──► public/iab-embeddings.json         │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │  RUNTIME (browser)                                              │
 │                                                                 │
 │  1. Load iab-embeddings.json  (precomputed, ~10 MB)             │
-│  2. Load EmbeddingGemma 300M ONNX from HuggingFace CDN          │
+│     ► cached in Cache Storage after first load                  │
+│  2. Load EmbeddingGemma 300M ONNX (q8, WASM)                   │
 │     ► cached in Cache Storage after first load                  │
 │                                                                 │
 │  3. User inputs text (typed or via bookmarklet)                 │
 │         │                                                       │
 │         ▼                                                       │
 │  4. Embed with query prefix: "task: search result | query: …"   │
-│  5. Cosine similarity (dot product, both vecs are L2-normed)    │
-│     against all ~700 precomputed category embeddings            │
+│  5. Cosine similarity against all ~700 precomputed embeddings   │
 │         │                                                       │
 │         ▼                                                       │
 │  6. Rank and display top 20 matches with similarity bars        │
+│  7. Mini-map: query plotted in UMAP space (weighted centroid    │
+│     of top-10 matches); click any result to highlight its dot  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -68,7 +71,7 @@ npm install
 
 ### 2. Generate taxonomy embeddings
 
-Downloads the IAB 3.1 TSV directly from the IAB GitHub repo, embeds every category (~700 entries), and writes `public/iab-embeddings.json`.
+Downloads the IAB 3.1 TSV directly from the IAB GitHub repo, embeds every category (~700 entries), computes a UMAP 2D projection, and writes `public/iab-embeddings.json`.
 
 ```bash
 npm run generate
@@ -78,7 +81,7 @@ This takes a few minutes on first run because it downloads the EmbeddingGemma mo
 
 ### 3. Serve
 
-Builds `src/app.ts → public/app.js` then starts a local static server.
+Builds `src/app.ts → public/app.js` and `src/viz.ts → public/viz.js`, then starts a local static server.
 
 ```bash
 npm run serve
@@ -86,6 +89,16 @@ npm run serve
 ```
 
 The browser downloads the model on first visit and stores it in Cache Storage. Subsequent visits load from cache instantly.
+
+---
+
+## Embedding space visualisation
+
+The app ships two ways to explore the UMAP projection of the IAB taxonomy embedding space:
+
+**Mini-map** (inline, right of results): appears after the first classification. Shows all taxonomy points coloured by Tier 1 category, with top-20 matches highlighted and the query plotted as a white dot at the weighted centroid of its top-10 matches. Click any result card to ring its point on the map.
+
+**Full-screen explorer** (`/viz.html`): pan with click-drag, zoom with scroll wheel, hover for category path tooltip. Linked via "Full map ↗" in the map panel header.
 
 ---
 
@@ -107,15 +120,19 @@ The hash fragment is never sent to any server — all processing happens locally
 
 ```
 ├── scripts/
-│   └── generate-embeddings.ts   # Node.js: fetch TSV → embed → write JSON
+│   └── generate-embeddings.ts   # Node.js: fetch TSV → embed → UMAP → write JSON
 ├── src/
 │   ├── types.ts                 # Shared TypeScript interfaces
 │   ├── parse-taxonomy.ts        # Fetch + parse IAB 3.1 TSV from GitHub
-│   └── app.ts                   # Browser app (compiled → public/app.js)
+│   ├── app.ts                   # Browser classifier (compiled → public/app.js)
+│   └── viz.ts                   # Full-screen UMAP explorer (compiled → public/viz.js)
 ├── public/
-│   ├── index.html               # UI + import map for @huggingface/transformers
+│   ├── index.html               # Classifier UI + import map
+│   ├── viz.html                 # Full-screen embedding space explorer
+│   ├── favicon.svg              # SVG favicon (embedding scatter plot)
 │   ├── app.js                   # Compiled output (generated by npm run build)
-│   └── iab-embeddings.json      # Precomputed embeddings (generated by npm run generate)
+│   ├── viz.js                   # Compiled output (generated by npm run build)
+│   └── iab-embeddings.json      # Precomputed embeddings + UMAP coords (generated)
 └── tsconfig.json
 ```
 
@@ -138,10 +155,11 @@ The hash fragment is never sent to any server — all processing happens locally
 
 ### Performance
 
-- **WASM SIMD / WebGPU** — `@huggingface/transformers` supports WebGPU backends. Switch `dtype` to `"fp32"` and set `device: "webgpu"` for ~5–10× inference speedup on supported hardware.
+- **WebGPU** — `@huggingface/transformers` supports WebGPU backends. Set `device: 'webgpu'` and `dtype: 'fp16'` for ~5–10× inference speedup on supported hardware (Chrome 113+, Edge 113+).
 - **Precompute in a Web Worker** — move model loading and inference off the main thread entirely to keep the UI responsive during classification.
 - **Quantise to q4** — halves model download size (~150 MB vs ~300 MB) with minor accuracy regression; worthwhile if cold-start time matters more than quality.
 - **OPFS model cache** — the Origin Private File System API provides more reliable large-file persistence than Cache Storage (which browsers may evict under memory pressure). Store the model weights in OPFS after first download.
+- **True UMAP projection for query** — re-run UMAP with the query embedding included (or use parametric UMAP) to get an exact query position rather than the weighted-centroid approximation.
 
 ### Developer experience
 
