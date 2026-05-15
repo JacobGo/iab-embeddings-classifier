@@ -2,6 +2,8 @@
 
 Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github.com/InteractiveAdvertisingBureau/Taxonomies) using semantic embeddings. Runs entirely in the browser — no server, no API calls at classify time.
 
+![IAB Content Classifier UI](demo.png)
+
 ## How it works
 
 ```
@@ -13,7 +15,7 @@ Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github
 │         ▼                                                       │
 │  2. embed each category path using EmbeddingGemma 300M          │
 │     "Technology & Computing > Computing > Internet > Cloud"     │
-│     with doc prefix: "title: none | text: <path>"              │
+│     with doc prefix: "title: none | text: <path>"               │
 │         │                                                       │
 │         ▼                                                       │
 │  3. UMAP 2D projection of all embeddings (umap-js)              │
@@ -25,7 +27,7 @@ Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github
 │                                                                 │
 │  1. Load iab-embeddings.json  (precomputed, ~10 MB)             │
 │     ► cached in Cache Storage after first load                  │
-│  2. Load EmbeddingGemma 300M ONNX (q8, WASM)                   │
+│  2. Load EmbeddingGemma 300M ONNX (q8, WASM)                    │
 │     ► cached in Cache Storage after first load                  │
 │                                                                 │
 │  3. User inputs text (typed or via bookmarklet)                 │
@@ -37,7 +39,7 @@ Classifies webpage content against the [IAB Content Taxonomy 3.1](https://github
 │         ▼                                                       │
 │  6. Rank and display top 20 matches with similarity bars        │
 │  7. Mini-map: query plotted in UMAP space (weighted centroid    │
-│     of top-10 matches); click any result to highlight its dot  │
+│     of top-10 matches); click any result to highlight its dot   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
