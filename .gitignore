@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Model cache (downloaded at runtime by generate script)
+.cache/
+
+# Generated files (rebuilt by npm run generate / npm run build)
+public/iab-embeddings.json
+public/app.js
+
+# Claude Code internal
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

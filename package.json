@@ -1,0 +1,19 @@
+{
+  "name": "iab-embeddings-classifier",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "generate": "tsx scripts/generate-embeddings.ts",
+    "build": "esbuild src/app.ts --outfile=public/app.js --format=esm --platform=browser",
+    "serve": "npm run build && npx serve public -p 3000"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}
